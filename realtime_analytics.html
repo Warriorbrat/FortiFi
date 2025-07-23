@@ -1,0 +1,106 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="p-4" style="background: linear-gradient(to right, #f3e5f5, #e1f5fe); min-height: 100vh;">
+    <h2 class="dashboard-title">⚡ Real-Time Analytics Dashboard</h2>
+
+    {% if pie_labels and pie_values %}
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 p-4 rounded-4 bg-white">
+                <h4 class="text-center text-success fw-bold mb-3">⚡ Real-Time – Pie Chart</h4>
+                <canvas id="pieChart" height="300"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 p-4 rounded-4 bg-white">
+                <h4 class="text-center text-success fw-bold mb-3">⚡ Real-Time – Bar Chart</h4>
+                <canvas id="barChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center mt-4 alert alert-warning shadow-sm fw-bold">
+        No real-time data available.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Custom Styling -->
+<style>
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        text-align: center;
+        background: linear-gradient(to right, #4caf50, #00bcd4, #ff9800);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card h4 {
+        font-size: 1.2rem;
+    }
+</style>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const pieLabels = JSON.parse('{{ pie_labels|escapejs }}');
+    const pieValues = JSON.parse('{{ pie_values|escapejs }}');
+
+    const pieChart = new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+            labels: pieLabels,
+            datasets: [{
+                data: pieValues,
+                backgroundColor: ['#66bb6a', '#ba68c8', '#ffb74d', '#4dd0e1', '#ef5350']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    const barChart = new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: pieLabels,
+            datasets: [{
+                label: 'Prediction Count',
+                data: pieValues,
+                backgroundColor: '#66bb6a'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0,
+                        color: '#444'
+                    },
+                    grid: { color: '#ccc' }
+                },
+                x: {
+                    ticks: { color: '#444' },
+                    grid: { color: '#eee' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="p-4" style="background: linear-gradient(to right, #e3f2fd, #f3e5f5); min-height: 100vh;">
+    <h2 class="dashboard-title">📊 Unified Network Analytics Dashboard</h2>
+
+    <div class="row mt-5">
+        <!-- Left Column: Batch Analytics -->
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 p-4 rounded-4 bg-white mb-4">
+                <h4 class="text-center text-primary fw-bold mb-3">📁 Batch Predictions – Pie Chart</h4>
+                <canvas id="batchPieChart" height="300"></canvas>
+            </div>
+            <div class="card shadow-lg border-0 p-4 rounded-4 bg-white">
+                <h4 class="text-center text-primary fw-bold mb-3">📁 Batch Predictions – Bar Chart</h4>
+                <canvas id="batchBarChart" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Right Column: Real-Time Analytics -->
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 p-4 rounded-4 bg-white mb-4">
+                <h4 class="text-center text-success fw-bold mb-3">⚡ Real-Time Predictions – Pie Chart</h4>
+                <canvas id="realtimePieChart" height="300"></canvas>
+            </div>
+            <div class="card shadow-lg border-0 p-4 rounded-4 bg-white">
+                <h4 class="text-center text-success fw-bold mb-3">⚡ Real-Time Predictions – Bar Chart</h4>
+                <canvas id="realtimeBarChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        text-align: center;
+        background: linear-gradient(to right, #1976d2, #9c27b0, #ff9800);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 30px;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card h4 {
+        font-size: 1.2rem;
+    }
+</style>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Batch Analytics
+    const batchLabels = JSON.parse('{{ batch_labels|escapejs }}');
+    const batchValues = JSON.parse('{{ batch_values|escapejs }}');
+
+    const batchPieChart = new Chart(document.getElementById('batchPieChart'), {
+        type: 'pie',
+        data: {
+            labels: batchLabels,
+            datasets: [{
+                data: batchValues,
+                backgroundColor: ['#1976d2', '#64b5f6', '#ffca28', '#e57373', '#81c784']
+            }]
+        }
+    });
+
+    const batchBarChart = new Chart(document.getElementById('batchBarChart'), {
+        type: 'bar',
+        data: {
+            labels: batchLabels,
+            datasets: [{
+                label: 'Prediction Count',
+                data: batchValues,
+                backgroundColor: '#1976d2'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#ccc' },
+                    ticks: { color: '#444' }
+                },
+                x: {
+                    ticks: { color: '#444' }
+                }
+            }
+        }
+    });
+
+    // Real-Time Analytics
+    const realtimeLabels = JSON.parse('{{ realtime_labels|escapejs }}');
+    const realtimeValues = JSON.parse('{{ realtime_values|escapejs }}');
+
+    const realtimePieChart = new Chart(document.getElementById('realtimePieChart'), {
+        type: 'pie',
+        data: {
+            labels: realtimeLabels,
+            datasets: [{
+                data: realtimeValues,
+                backgroundColor: ['#388e3c', '#81c784', '#ff7043', '#9575cd', '#4dd0e1']
+            }]
+        }
+    });
+
+    const realtimeBarChart = new Chart(document.getElementById('realtimeBarChart'), {
+        type: 'bar',
+        data: {
+            labels: realtimeLabels,
+            datasets: [{
+                label: 'Prediction Count',
+                data: realtimeValues,
+                backgroundColor: '#388e3c'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#ccc' },
+                    ticks: { color: '#444' }
+                },
+                x: {
+                    ticks: { color: '#444' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

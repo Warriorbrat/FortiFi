@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="background: linear-gradient(to right, #e3f2fd, #fce4ec);">
+        <h2 class="text-center mb-4 fw-bold" style="color: #0d47a1;">📁 Batch Intrusion Detection (CSV Upload)</h2>
+
+        <form method="POST" enctype="multipart/form-data" class="mb-4">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-gradient btn-lg px-4 py-2" style="background: linear-gradient(to right, #1976d2, #64b5f6); color: white; border: none; border-radius: 8px;">
+                    ⬆ Upload & Predict
+                </button>
+            </div>
+        </form>
+
+        {% if message %}
+        <div class="alert alert-info text-center mt-3 fw-semibold">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        {% if prediction_table %}
+        <div class="mt-5">
+            <h5 class="fw-bold text-success text-center">📊 Prediction Results</h5>
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered table-hover table-striped rounded-3">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            {% for col in prediction_table.0.keys %}
+                                <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in prediction_table %}
+                            <tr>
+                                {% for val in row.values %}
+                                    <td>{{ val }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

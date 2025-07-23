@@ -1,0 +1,116 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="p-4" style="background: linear-gradient(135deg, #d1c4e9, #b2dfdb); min-height: 100vh;">
+    <h2 class="dashboard-title">📊 Batch Analytics Dashboard</h2>
+
+    {% if error %}
+        <div class="alert alert-warning text-center shadow-sm">{{ error }}</div>
+    {% else %}
+    <div class="row mt-4">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow p-3 border-0 rounded-4 bg-white">
+                <h5 class="text-center text-primary fw-bold mb-3">Prediction Distribution (Pie Chart)</h5>
+                <canvas id="pieChart" height="300"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow p-3 border-0 rounded-4 bg-white">
+                <h5 class="text-center text-primary fw-bold mb-3">Prediction Count (Bar Chart)</h5>
+                <canvas id="barChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .dashboard-title {
+        font-size: 2.6rem;
+        font-weight: 900;
+        text-align: center;
+        background: linear-gradient(90deg, #7b1fa2, #00bcd4, #ff9800);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 35px;
+        position: relative;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .dashboard-title::after {
+        content: '';
+        display: block;
+        width: 120px;
+        height: 4px;
+        margin: 12px auto 0;
+        background: linear-gradient(to right, #7b1fa2, #00bcd4);
+        border-radius: 10px;
+        animation: underline-glow 2s infinite alternate;
+    }
+
+    @keyframes underline-glow {
+        0% { width: 100px; opacity: 0.8; }
+        100% { width: 160px; opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-25px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const pieLabels = JSON.parse('{{ pie_labels|escapejs }}');
+    const pieValues = JSON.parse('{{ pie_values|escapejs }}');
+    const barLabels = JSON.parse('{{ bar_labels|escapejs }}');
+    const barValues = JSON.parse('{{ bar_values|escapejs }}');
+
+    const commonColors = ['#7b1fa2', '#00bcd4', '#ff9800', '#4caf50', '#e91e63', '#3f51b5'];
+
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: pieLabels,
+            datasets: [{
+                data: pieValues,
+                backgroundColor: commonColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 1000 }
+        }
+    });
+
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: barLabels,
+            datasets: [{
+                label: 'Prediction Count',
+                data: barValues,
+                backgroundColor: commonColors,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 1000 },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#ccc' },
+                    ticks: { color: '#444' }
+                },
+                x: {
+                    ticks: { color: '#444' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

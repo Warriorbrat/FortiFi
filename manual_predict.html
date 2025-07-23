@@ -1,0 +1,72 @@
+{% extends 'core/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4 p-5" style="background: linear-gradient(to right, #f3e5f5, #e3f2fd);">
+        <h2 class="text-center fw-bold mb-4" style="color: #4a148c;">🛡️ Manual Intrusion Detection Form</h2>
+
+        <form method="POST" novalidate>
+            {% csrf_token %}
+
+            <div class="row">
+                <h5 class="text-primary mb-3">🔹 Basic Features</h5>
+                {% for field in basic_fields %}
+                <div class="col-md-6 mb-4">
+                    <label class="form-label fw-semibold" style="color: #1a237e;">{{ field.label }}</label>
+                    {% render_field field class="form-control form-control-lg border-primary shadow-sm" %}
+                    {% if field.errors %}
+                        <div class="text-danger mt-1 small">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="button" class="btn btn-outline-secondary rounded-pill shadow-sm" onclick="toggleAdvancedFields()">
+                    ⚙️ View Additional Features
+                </button>
+            </div>
+
+            <div id="advanced-fields" class="row mt-4" style="display: none;">
+                <h5 class="text-success mb-3">🔸 Advanced Features</h5>
+                {% for field in advanced_fields %}
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold" style="color: #1a237e;">{{ field.label }}</label>
+                    {% render_field field class="form-control form-control-lg border-success shadow-sm" %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-lg btn-primary px-5 shadow-sm rounded-pill">🔍 Predict</button>
+            </div>
+        </form>
+
+        {% if prediction %}
+        <div class="alert alert-info mt-5 shadow-sm text-center fs-5 fw-semibold rounded-4" style="background-color: #d1ecf1; border-left: 5px solid #0d6efd;">
+            <strong>🚨 Prediction Result:</strong> {{ prediction }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function toggleAdvancedFields() {
+        const advFields = document.getElementById("advanced-fields");
+        advFields.style.display = advFields.style.display === "none" ? "flex" : "none";
+    }
+</script>
+
+<style>
+    .form-label {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 8px rgba(33, 150, 243, 0.6);
+        border-color: #1976d2;
+    }
+</style>
+{% endblock %}

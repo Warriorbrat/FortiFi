@@ -1,0 +1,66 @@
+<!-- core/templates/core/view_logs.html -->
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm p-4">
+        <h3 class="mb-4 text-primary fw-bold">📂 View Prediction Logs</h3>
+
+        <div class="mb-3">
+            <input type="text" id="searchInput" class="form-control shadow-sm" placeholder="🔍 Search logs by filename..." onkeyup="filterLogs()">
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle" id="logsTable">
+                <thead class="table-dark text-white">
+                    <tr>
+                        <th scope="col">📁 Filename</th>
+                        <th scope="col">📊 Total Rows</th>
+                        <th scope="col">🔎 Preview (Top 5 Rows)</th>
+                        <th scope="col">⚙️ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.filename }}</td>
+                        <td>{{ log.total_rows }}</td>
+                        <td>
+                            <ul class="mb-0 ps-3">
+                                {% for row in log.preview %}
+                                    <li style="font-size: 0.9rem;">{{ row }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>
+                            <a href="{% url 'download_log' log.filename %}" class="btn btn-sm btn-outline-success mb-1">⬇ Download</a><br>
+                            <a href="{% url 'delete_log' log.filename %}" class="btn btn-sm btn-outline-danger">🗑 Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">No logs available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterLogs() {
+    var input = document.getElementById("searchInput");
+    var filter = input.value.toLowerCase();
+    var table = document.getElementById("logsTable");
+    var tr = table.getElementsByTagName("tr");
+
+    for (var i = 1; i < tr.length; i++) {
+        var td = tr[i].getElementsByTagName("td")[0]; // filename column
+        if (td) {
+            var txtValue = td.textContent || td.innerText;
+            tr[i].style.display = txtValue.toLowerCase().includes(filter) ? "" : "none";
+        }
+    }
+}
+</script>
+{% endblock %}
